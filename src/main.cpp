@@ -60,7 +60,7 @@ void loop() {
   http.addHeader("Content-Type", "application/vnd.kafka.json.v2+json");
 
   // build the payload
-  int temperature = 29;
+  int temperature = random(20, 26);
   sprintf(payload, "{ \"records\": [ { \"key\": \"%s\", \"value\": { \"deviceId\": \"%s\", \"temperature\": %d } } ] }", 
           deviceId, deviceId, temperature);
   Serial.print("Sending...");
