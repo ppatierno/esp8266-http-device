@@ -17,6 +17,8 @@ char payload[100];
 DHT dht(DHTPIN, DHTTYPE);
 #endif
 
+// functions declarations
+int getTemperature();
 
 void setup() {
   delay(1000);
@@ -65,11 +67,7 @@ void loop() {
   http.addHeader("Content-Type", "application/vnd.kafka.json.v2+json");
 
   // build the payload
-  #if DHT11_SENSOR
-  int temperature = (int) dht.readTemperature();
-  #else
-  int temperature = random(minTemperature, maxTemperature + 1);
-  #endif
+  int temperature = getTemperature();
   sprintf(payload, "{ \"records\": [ { \"key\": \"%s\", \"value\": { \"deviceId\": \"%s\", \"temperature\": %d } } ] }", 
           deviceId, deviceId, temperature);
   Serial.print("Sending...");
@@ -80,4 +78,12 @@ void loop() {
   http.end();
 
   delay(5000);
+}
+
+int getTemperature() {
+  #if DHT11_SENSOR
+  return (int) dht.readTemperature();
+  #else
+  return random(minTemperature, maxTemperature + 1);
+  #endif
 }
