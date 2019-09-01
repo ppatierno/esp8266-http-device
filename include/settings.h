@@ -12,4 +12,6 @@ const char *deviceId = "<DEVICE-ID>";
 const int minTemperature = 20;
 const int maxTemperature = 25;
 
+#define DHT11_SENSOR false
+
 #endif
