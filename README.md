@@ -14,3 +14,6 @@ Before compiling and flashing the firmware on the ESP8266 board, the `settings.h
 * `bridge`: the Kafka - HTTP bridge URL to connect to;
 * `topic`: the topic to send messages to;
 * `deviceId`: the device ID;
+
+The application can be used emulating the temperature readings or with a real [DHT11](https://learn.adafruit.com/dht) sensor.
+In order to enable/disable the real sensor, change the `DHT11_SENSOR` constant value (trut/false) in the `settings.h` header.
