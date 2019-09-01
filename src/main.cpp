@@ -3,9 +3,20 @@
 #include <ESP8266HTTPClient.h>
 
 #include "settings.h"
+#if DHT11_SENSOR
+#include <DHT.h>
+#endif
 
 char endpoint[100];
 char payload[100];
+
+#if DHT11_SENSOR
+#define DHTPIN D4
+#define DHTTYPE DHT11
+
+DHT dht(DHTPIN, DHTTYPE);
+#endif
+
 
 void setup() {
   delay(1000);
@@ -33,24 +44,18 @@ void setup() {
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
 
-  // initialize LED digital pin as an output.
-  pinMode(2, OUTPUT);
-
   sprintf(endpoint, "http://%s/topics/%s", bridge, topic);
   Serial.print("Bridge endpoint: ");
   Serial.println(endpoint);
+
+  #if DHT11_SENSOR
+  dht.begin();
+  #endif
 }
 
 void loop() {
-  // turn the LED on (HIGH is the voltage level)
-  digitalWrite(2, HIGH);
-  delay(1000);
-
-  // turn the LED off by making the voltage LOW
-  digitalWrite(2, LOW);
-
-  // wait for a second
-  delay(1000);
+  // Wait a few seconds between measurements.
+  delay(2000);
 
   WiFiClient client;
   HTTPClient http;
@@ -60,7 +65,11 @@ void loop() {
   http.addHeader("Content-Type", "application/vnd.kafka.json.v2+json");
 
   // build the payload
+  #if DHT11_SENSOR
+  int temperature = (int) dht.readTemperature();
+  #else
   int temperature = random(minTemperature, maxTemperature + 1);
+  #endif
   sprintf(payload, "{ \"records\": [ { \"key\": \"%s\", \"value\": { \"deviceId\": \"%s\", \"temperature\": %d } } ] }", 
           deviceId, deviceId, temperature);
   Serial.print("Sending...");
