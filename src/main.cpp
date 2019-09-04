@@ -19,6 +19,7 @@ DHT dht(DHTPIN, DHTTYPE);
 
 // functions declarations
 int getTemperature();
+int getHumidity();
 
 void setup() {
   delay(1000);
@@ -68,8 +69,9 @@ void loop() {
 
   // build the payload
   int temperature = getTemperature();
-  sprintf(payload, "{ \"records\": [ { \"key\": \"%s\", \"value\": { \"deviceId\": \"%s\", \"temperature\": %d } } ] }", 
-          deviceId, deviceId, temperature);
+  int humidity = getHumidity();
+  sprintf(payload, "{ \"records\": [ { \"key\": \"%s\", \"value\": { \"deviceId\": \"%s\", \"temperature\": %d, \"humidity\": %d } } ] }", 
+          deviceId, deviceId, temperature, humidity);
   Serial.print("Sending...");
   Serial.println(payload);
 
@@ -85,5 +87,13 @@ int getTemperature() {
   return (int) dht.readTemperature();
   #else
   return random(minTemperature, maxTemperature + 1);
+  #endif
+}
+
+int getHumidity() {
+  #if DHT11_SENSOR
+  return (int) dht.readHumidity();
+  #else
+  return random(minHumidity, maxHumidity + 1);
   #endif
 }
